@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Expense Tracker</title>
+</head>
+
+<body>
+    <h1>Expense Tracker</h1>
+    <div id="app">
+        <form onsubmit="saveToLocalStorage(event)">
+            <label for="Expenseamount">Choose Expenseamount:</label>
+            <input type="text" id="Expenseamount" name="Expenseamount">
+            <label for="description">Choose description:</label>
+            <input type="text" id="description" name="description">
+            <label for="Category" name="Category">Choose a Category:</label>
+            <select id="dropdown">
+                <option value="option1">Movies</option>
+                <option value="option2">Food</option>
+                <option value="option3">Song</option>
+                <option value="option4">Electicity</option>
+            </select>
+            <button id="addExpense">Add expense</button>
+        </form>
+        <ul id="expenseList"></ul>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    // Check for saved expenses in localStorage
+    for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!isNaN(parseFloat(key))) {
+            const obj = JSON.parse(localStorage.getItem(key));
+            showUserOnScreen(obj);
+        }
+    }
+});
+
+function saveToLocalStorage(event) {
+    event.preventDefault();
+    const Expenseamoun = event.target.Expenseamount.value;
+    const description = event.target.description.value;
+    const Category = event.target.dropdown.value;
+
+    const obj = {
+        Expenseamoun,
+        description,
+        Category
+    }
+    localStorage.setItem(obj.Expenseamoun, JSON.stringify(obj));
+    showUserOnScreen(obj);
+}
+
+function showUserOnScreen(obj) {
+    const parentElem = document.getElementById('expenseList');
+    const listItem = document.createElement('li');
+    listItem.textContent = obj.Expenseamoun + ' - ' + obj.description + ' - ' + obj.Category;
+
+    // Create a "DELETE" button
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete Expensive';
+    deleteButton.onclick = function () {
+        // Remove the expense from localStorage
+        localStorage.removeItem(obj.Expenseamoun);
+        // Remove the expense from the list
+        parentElem.removeChild(listItem);
+    };
+
+    // Create an "EDIT" button
+    const editButton = document.createElement('button');
+    editButton.textContent = 'Edit Expensive';
+    editButton.onclick = function () {
+        // You can implement the edit functionality here
+        // For example, you can populate the form fields with the user's data for editing.
+        document.querySelector('input[name="Expenseamoun"]').value = obj.Expenseamoun;
+        document.querySelector('input[name="description"]').value = obj.description;
+        document.querySelector('select').value = obj.Category;
+    };
+
+    // Append the "DELETE" and "EDIT" buttons to the list item
+    listItem.appendChild(deleteButton);
+    listItem.appendChild(editButton);
+
+    // Append the list item to the list
+    parentElem.appendChild(listItem);
+}
+
+    </script>
+</body>
+
+</html>
